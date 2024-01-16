@@ -2,6 +2,7 @@ from googleapiclient.discovery import build
 import pymongo
 import pymysql
 import pandas as pd
+from datetime import timedelta
 import streamlit as st
 
 
@@ -319,7 +320,7 @@ def videos_table():
                                                     Thumbnail varchar(200),
                                                     Description text,
                                                     Published_Date char(20),
-                                                    Duration datetime,
+                                                    Duration char(15),
                                                     Views bigint,
                                                     Likes bigint,
                                                     Comments int,
@@ -342,7 +343,8 @@ def videos_table():
             vi_list.append(vi_data['video_information'][i])
             
     df2=pd.DataFrame(vi_list)
-
+    df2["Duration"] = pd.to_timedelta(df2["Duration"]).dt.total_seconds()
+    df2["Duration"] = pd.to_datetime(df2["Duration"], unit="s").dt.strftime('%H.%M.%S')
 
     for index,row in df2.iterrows():
             insert_query='''insert into videos(Channel_Name,
@@ -502,6 +504,8 @@ def show_comments_table():
     df3=st.dataframe(com_list)
     return df3
 
+
+# streamlit part 
 
 # streamlit part 
 
